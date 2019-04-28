@@ -13,7 +13,7 @@ import { Task } from '../models/task.model';
 export class EditTaskPage implements OnInit {
 
   taskID: number = null;
-  taskForm: FormGroup;
+  editTaskForm: FormGroup;
   todoTasks: Array<Task> = []; //array to query the task object
   selectedTask: Task = null;
   selectedIndex: number = null;
@@ -46,15 +46,13 @@ export class EditTaskPage implements OnInit {
   }
 
   ngOnInit() {
-    console.log('taskID:' + this.taskID);
     //if there is an ID load the task
     if (this.taskID != null) {
       this.loadTask();
-      console.log('the task is', this.selectedTask);
     }
 
     //binding form fields
-    this.taskForm = this.formBuilder.group({
+    this.editTaskForm = this.formBuilder.group({
       description: [this.selectedTask.description, [Validators.required]],
       type: [this.selectedTask.type, [Validators.required]],
       date: [new Date(this.selectedTask.dueDate).toISOString(), [Validators.required]],
@@ -73,7 +71,6 @@ export class EditTaskPage implements OnInit {
       if (theTask.id == this.taskID) {
         this.selectedTask = theTask;
         this.selectedIndex = index;
-        console.log("found the task!");
       }
     });
   }
@@ -122,8 +119,9 @@ export class EditTaskPage implements OnInit {
     this.storage.saveData('todo-list', this.todoTasks)
       .then((response) => {
         //data written successfully
-        this.router.navigate(['/tabs/todo']);
         console.log('Data saved successfully!');
+        this.router.navigate(['/tabs/todo']);
+        
       })
       .catch((error) => {
         console.log(error);

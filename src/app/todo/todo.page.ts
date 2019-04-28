@@ -19,7 +19,7 @@ export class TodoPage implements OnInit {
 
   ngOnInit() { }
 
-  ionViewDidEnter(){
+  ionViewDidEnter (){
     this.storage.readData('todo-list')
     .then((response:any)=>{
       if(response){

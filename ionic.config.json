@@ -1,5 +1,7 @@
 {
   "name": "2dor",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
