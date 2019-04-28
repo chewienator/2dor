@@ -15,16 +15,16 @@ export class TodoPage implements OnInit {
   constructor(
     private router:Router,
     private storage:StorageService
-  ) { }
+  ) { console.log("Loading todo list page");}
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   ionViewDidEnter(){
-    this.readData('todo-list')
+    this.storage.readData('todo-list')
     .then((response:any)=>{
       if(response){
         this.todoTasks = JSON.parse(response);
+        console.log("loaded tasks", this.todoTasks);
       }
     })
     .catch((error)=>{
@@ -32,6 +32,7 @@ export class TodoPage implements OnInit {
     });
   }
 
+  //go to create task page
   addTask(){
     this.router.navigate(['/create-task']);
   }
@@ -47,9 +48,7 @@ export class TodoPage implements OnInit {
         id: task.id
       }
     };
-    this.router.navigate(['/edit-task'], navigationExtras);
-
-    console.log("clicked on task: ", task);    
+    this.router.navigate(['/edit-task'], navigationExtras);   
   }
 
   //read data from localstorage

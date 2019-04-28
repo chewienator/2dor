@@ -21,4 +21,21 @@ export class StorageService {
     });
   }
 
+    //read data from localstorage
+    readData( key ){
+      return new Promise((resolve,reject)=>{
+        try{
+          let data = window.localStorage.getItem( key );
+          if( data ){
+            resolve(data);
+          }else{
+            throw('no data');
+          }
+        }
+        catch(exception){
+          reject(exception);
+        }
+      })
+    }
+
 }

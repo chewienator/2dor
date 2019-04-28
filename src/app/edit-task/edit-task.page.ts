@@ -13,9 +13,10 @@ import { Task } from '../models/task.model';
 export class EditTaskPage implements OnInit {
 
   taskID: number = null;
-  //taskForm: FormGroup;
+  taskForm: FormGroup;
   todoTasks: Array<Task> = []; //array to query the task object
   selectedTask: Task = null;
+  selectedIndex: number = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -23,27 +24,16 @@ export class EditTaskPage implements OnInit {
     private formBuilder: FormBuilder,
     private storage: StorageService
   ) {
+    console.log("Loading edit task page");
     //grab the task id from the route
     this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.taskID = this.router.getCurrentNavigation().extras.state.id;
       }
     });
-    console.log("taskID: ", this.taskID);
-/*
-    //binding form fields
-    this.taskForm = formBuilder.group({
-      id:[this.selectedTask.id, [Validators.required]],
-      description: [this.selectedTask.description, [Validators.required]],
-      type: [this.selectedTask.type, [Validators.required]],
-      date: [new Date(this.selectedTask.dueDate).toISOString(), [Validators.required]],
-      time: [new Date(this.selectedTask.dueTime).toISOString(), [Validators.required]]
-    });
-*/
-  }
 
-  ngOnInit() {
-    this.readData('todo-list')
+    //load the localstorage to search the task needed
+    this.storage.readData('todo-list')
       .then((response: any) => {
         if (response) {
           this.todoTasks = JSON.parse(response);
@@ -53,46 +43,91 @@ export class EditTaskPage implements OnInit {
       .catch((error) => {
         console.log(error);
       });
+  }
 
+  ngOnInit() {
     console.log('taskID:' + this.taskID);
-    //console.log(this.dataService.loadTask(this.taskID));
     //if there is an ID load the task
     if (this.taskID != null) {
-      this.selectedTask = this.loadTask(this.taskID);
+      this.loadTask();
+      console.log('the task is', this.selectedTask);
     }
-    console.log('the task is', this.selectedTask);
+
+    //binding form fields
+    this.taskForm = this.formBuilder.group({
+      description: [this.selectedTask.description, [Validators.required]],
+      type: [this.selectedTask.type, [Validators.required]],
+      date: [new Date(this.selectedTask.dueDate).toISOString(), [Validators.required]],
+      time: [new Date(this.selectedTask.dueTime).toISOString(), [Validators.required]]
+    });
   }
 
   /*
   This function searches for an object with a specific id 
   within the Tasks array, and returns that object
   */
-  loadTask(id): Task {
+  loadTask() {
     //search within the current task array
-    this.todoTasks.forEach((theTask) => {
+    this.todoTasks.forEach((theTask, index) => {
       //if id is found, set the object
-      if (theTask.id == id) {
+      if (theTask.id == this.taskID) {
         this.selectedTask = theTask;
+        this.selectedIndex = index;
+        console.log("found the task!");
       }
     });
-    return this.selectedTask;
   }
 
-  //read data from localstorage
-  readData(key) {
-    return new Promise((resolve, reject) => {
-      try {
-        let data = window.localStorage.getItem(key);
-        if (data) {
-          resolve(data);
-        } else {
-          throw ('no data');
-        }
-      }
-      catch (exception) {
-        reject(exception);
-      }
-    })
+  editTask(task) {
+    //first delete the object from the array
+    this.deleteItem(this.selectedIndex);
+
+    //create new task object
+    let newTask = {
+      id: new Date().getTime(),
+      description: task.description,
+      type: task.type,
+      dueDate: new Date(task.date).getTime(),
+      dueTime: new Date(task.time).getTime()
+    };
+
+    //push object to the list item array
+    this.todoTasks.push(newTask);
+    
+    //sort before saving
+    this.sortList();
+    
+    //save the changes to localstorage
+    this.saveList();
+
+  }
+
+  //sorting the list
+  sortList() {
+    this.todoTasks.sort((item1, item2) => {
+      return item2.dueTime - item1.dueTime;
+    });
+  }
+
+  //delete item from the list
+  deleteItem(id: number) {
+    this.todoTasks.splice(this.selectedIndex, 1);
+    //save the changes to localstorage
+    this.saveList();
+  }
+
+  //save data to localstorage
+  saveList() {
+    //save the data from our list to localstorage
+    this.storage.saveData('todo-list', this.todoTasks)
+      .then((response) => {
+        //data written successfully
+        this.router.navigate(['/tabs/todo']);
+        console.log('Data saved successfully!');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
 }

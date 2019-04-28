@@ -20,6 +20,7 @@ export class CreateTaskPage implements OnInit {
     private formBuilder: FormBuilder,
     private storage:StorageService
   ) {
+    console.log("Loading create task page");
     //binding form fields
     this.taskForm = formBuilder.group({
       description: ['', [Validators.required]],
@@ -29,8 +30,10 @@ export class CreateTaskPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.readData('todo-list')
+  ngOnInit() {}
+
+  ionViewDidEnter(){
+    this.storage.readData('todo-list')
     .then((response:any)=>{
       if(response){
         this.todoTasks = JSON.parse(response);
@@ -41,24 +44,6 @@ export class CreateTaskPage implements OnInit {
       console.log(error);
     });
    }
-
-
-  //read data from localstorage
-  readData( key ){
-    return new Promise((resolve,reject)=>{
-      try{
-        let data = window.localStorage.getItem( key );
-        if( data ){
-          resolve(data);
-        }else{
-          throw('no data');
-        }
-      }
-      catch(exception){
-        reject(exception);
-      }
-    })
-  }
 
   addTask(task) {
 
