@@ -80,6 +80,7 @@ export class CreateTaskPage implements OnInit {
     this.todoTasks.push(newTask);
     //sort before saving
     this.sortList();
+    
     //create notification
     this.notification.schedule({
       id:newTask.id,

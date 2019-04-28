@@ -49,7 +49,7 @@ export class DonePage implements OnInit {
   }
 
   //delete item from the list
-  deleteItem(index: number) {
+  deleteItem(index: number){
     this.doneTasks.splice(index, 1);
     //save the changes to localstorage
     this.saveList();

@@ -120,7 +120,7 @@ export class TodoPage implements OnInit {
         console.log(error);
       });
       this.router.navigate(['/tabs/todo'], {
-        queryParams: {refresh: new Date().getTime()}
+        queryParams: {refresh: new Date().getTime() }
       });
   }
 
