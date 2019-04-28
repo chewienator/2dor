@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 export class StorageService {
 
   constructor() { }
-/*
+
   saveData( key, value ){
     //make a new promise to save the data
     return new Promise((resolve,reject) => {
@@ -20,5 +20,5 @@ export class StorageService {
       }
     });
   }
-  */
+
 }

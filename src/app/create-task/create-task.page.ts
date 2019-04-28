@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { StorageService}  from '../storage.service';
+//models
+import { Task } from '../models/task.model';
 
 @Component({
   selector: 'app-create-task',
@@ -9,22 +13,94 @@ import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 export class CreateTaskPage implements OnInit {
 
   taskForm: FormGroup;
+  todoTasks: Array<Task> = []; //array to store the task objects
 
   constructor(
-    private formBuilder:FormBuilder,
-  ) { 
+    private router:Router,
+    private formBuilder: FormBuilder,
+    private storage:StorageService
+  ) {
     //binding form fields
     this.taskForm = formBuilder.group({
-      description: ['', [Validators.required]]
+      description: ['', [Validators.required]],
+      type: ['', [Validators.required]],
+      date: [new Date().toISOString(), [Validators.required]],
+      time: [new Date().toISOString(), [Validators.required]]
     });
   }
 
   ngOnInit() {
-    
+    this.readData('todo-list')
+    .then((response:any)=>{
+      if(response){
+        this.todoTasks = JSON.parse(response);
+        console.log("loaded tasks", this.todoTasks);
+      }
+    })
+    .catch((error)=>{
+      console.log(error);
+    });
+   }
+
+
+  //read data from localstorage
+  readData( key ){
+    return new Promise((resolve,reject)=>{
+      try{
+        let data = window.localStorage.getItem( key );
+        if( data ){
+          resolve(data);
+        }else{
+          throw('no data');
+        }
+      }
+      catch(exception){
+        reject(exception);
+      }
+    })
   }
 
-  addTask(task){
-    console.log(task);
+  addTask(task) {
+
+    //create new task object
+    let newTask = {
+      id: new Date().getTime(),
+      description: task.description,
+      type: task.type,
+      dueDate: new Date(task.date).getTime(),
+      dueTime: new Date(task.time).getTime()
+    };
+
+    //push object to the list item array
+    this.todoTasks.push(newTask);
+    console.log("before sorting", this.todoTasks);
+    //sort before saving
+    this.sortList();
+    console.log("after sorting", this.todoTasks);
+    //save the changes to localstorage
+    this.saveList();
+
+  }
+
+  //save data to localstorage
+  saveList() {
+    //save the data from our list to localstorage
+    this.storage.saveData('todo-list', this.todoTasks)
+      .then((response) => {
+        //data written successfully
+        this.router.navigate(['/tabs/todo']);
+        console.log('Data saved successfully! :)');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  //sorting the list
+  sortList() {
+    this.todoTasks.sort((item1, item2) => {
+      return item2.dueTime - item1.dueTime;
+    });
   }
 
 }
