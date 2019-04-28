@@ -100,7 +100,9 @@ export class CreateTaskPage implements OnInit {
     this.storage.saveData('todo-list', this.todoTasks)
       .then((response) => {
         //data written successfully
-        this.router.navigate(['/tabs/todo']);
+        this.router.navigate(['/tabs/todo'], {
+          queryParams: {refresh: new Date().getTime()}
+        });
         console.log('Data saved successfully! :)');
       })
       .catch((error) => {

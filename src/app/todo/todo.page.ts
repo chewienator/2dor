@@ -64,15 +64,14 @@ export class TodoPage implements OnInit {
   }
 
   deleteTask(id) {
-    let selectedIndex: number = null;
     //search within the current task array
     this.todoTasks.forEach((theTask, index) => {
       //if id is found, set the object
       if (theTask.id == id) {
-        selectedIndex = index;
+        this.deleteItem(index);
       }
     });
-    this.deleteItem(selectedIndex);
+    
   }
 
   //delete item from the list
@@ -89,7 +88,9 @@ export class TodoPage implements OnInit {
       .then((response) => {
         //data written successfully
         console.log('Data saved successfully!');
-        this.router.navigate(['/tabs/todo']);
+        this.router.navigate(['/tabs/todo'], {
+          queryParams: {refresh: new Date().getTime()}
+        });
 
       })
       .catch((error) => {

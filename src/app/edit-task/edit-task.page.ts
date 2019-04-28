@@ -150,7 +150,9 @@ export class EditTaskPage implements OnInit {
       .then((response) => {
         //data written successfully
         console.log('Data saved successfully!');
-        this.router.navigate(['/tabs/todo']);
+        this.router.navigate(['/tabs/todo'], {
+          queryParams: {refresh: new Date().getTime()}
+        });
         
       })
       .catch((error) => {
