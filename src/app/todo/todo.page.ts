@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StorageService } from '../storage.service'; //import data service
 import { Router, NavigationExtras } from '@angular/router';
 import { Task } from '../models/task.model';
 
@@ -9,20 +10,21 @@ import { Task } from '../models/task.model';
 })
 export class TodoPage implements OnInit {
 
-  tasks:Array<Task>; //here we will hold all the list of tasks
+  todoTasks:Array<Task>; //here we will hold all the list of tasks
 
   constructor(
-    private router:Router
+    private router:Router,
+    private storage:StorageService
   ) { }
 
   ngOnInit() {
   }
 
   ionViewDidEnter(){
-    this.readData('list')
+    this.readData('todo-list')
     .then((response:any)=>{
       if(response){
-        this.tasks = JSON.parse(response);
+        this.todoTasks = JSON.parse(response);
       }
     })
     .catch((error)=>{
@@ -47,7 +49,7 @@ export class TodoPage implements OnInit {
     };
     this.router.navigate(['/edit-task'], navigationExtras);
 
-    console.log("clicked on task: "+task.description);    
+    console.log("clicked on task: ", task);    
   }
 
   //read data from localstorage
