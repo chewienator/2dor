@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { StorageService } from '../storage.service';
+import { AlertController } from '@ionic/angular';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 //models
 import { Task } from '../models/task.model';
 
@@ -22,7 +24,9 @@ export class EditTaskPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private storage: StorageService
+    private storage: StorageService,
+    private notification:LocalNotifications,
+    private alertCtrl:AlertController
   ) {
     console.log("Loading edit task page");
     //grab the task id from the route
@@ -43,6 +47,24 @@ export class EditTaskPage implements OnInit {
       .catch((error) => {
         console.log(error);
       });
+
+      
+    //make observable for click event on notification
+    this.notification.on('click').subscribe(res=>{
+      console.log('clicked: ',res);
+      //get message from result.data if found use mydata if not just empty string
+      let msg = res.data ? res.data.mydata : '';
+      //show alert
+      this.showAlert(res.title, res.text, msg);
+    });
+    //make observable for trigger event on notification
+    this.notification.on('trigger').subscribe(res=>{
+      console.log('triggered: ',res);
+      //get message from result.data if found use mydata if not just empty string
+      let msg = res.data ? res.data.mydata : '';
+      //show alert
+      this.showAlert(res.title, res.text, msg);
+    });
   }
 
   ngOnInit() {
@@ -93,7 +115,15 @@ export class EditTaskPage implements OnInit {
     
     //sort before saving
     this.sortList();
-    
+
+    this.notification.schedule({
+      id:newTask.id,
+      title: 'You have a task deadline!!',
+      text:newTask.description,
+      trigger:{at:new Date(newTask.dueTime)},
+      foreground: true
+    });
+
     //save the changes to localstorage
     this.saveList();
 
@@ -127,5 +157,15 @@ export class EditTaskPage implements OnInit {
         console.log(error);
       });
   }
+
+      //show alert helper function
+      showAlert(header, sub, msg){
+        this.alertCtrl.create({
+          header: header,
+          subHeader: sub,
+          message: msg, 
+          buttons: ['OK']
+        }).then(alert=>alert.present());
+      }
 
 }

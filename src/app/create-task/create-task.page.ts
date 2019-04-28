@@ -80,6 +80,15 @@ export class CreateTaskPage implements OnInit {
     this.todoTasks.push(newTask);
     //sort before saving
     this.sortList();
+    //create notification
+    this.notification.schedule({
+      id:newTask.id,
+      title: 'You have a task deadline!!',
+      text:newTask.description,
+      trigger:{at:new Date(newTask.dueTime)},
+      foreground: true
+    });
+
     //save the changes to localstorage
     this.saveList();
 
@@ -90,10 +99,9 @@ export class CreateTaskPage implements OnInit {
     //save the data from our list to localstorage
     this.storage.saveData('todo-list', this.todoTasks)
       .then((response) => {
-        this.todoTasks = null;
         //data written successfully
         this.router.navigate(['/tabs/todo']);
-        console.log('Data saved successfully! :)', this.todoTasks);
+        console.log('Data saved successfully! :)');
       })
       .catch((error) => {
         console.log(error);
