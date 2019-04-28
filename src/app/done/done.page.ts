@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, NavigationExtras } from '@angular/router';
 
 @Component({
   selector: 'app-done',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DonePage implements OnInit {
 
-  constructor() { }
+  constructor(
+    private router:Router
+  ) { }
 
   ngOnInit() {
   }
 
+  addTask(){
+    this.router.navigate(['/create-task']);
+  }
 }

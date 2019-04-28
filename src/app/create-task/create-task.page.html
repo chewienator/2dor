@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Create task</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="taskForm" (submit) ="addTask(taskForm.value)">
+    <ion-list>
+      <ion-item>
+        <ion-label>Task description</ion-label>
+        <ion-input type="text" name="description" formControlName="description" placeholder="Enter task description"></ion-input>
+      </ion-item>
+     
+      <ion-button slot="start" type="submit" [disabled]="!taskForm.valid">Login</ion-button>
+    </ion-list>
+  </form>
+</ion-content>
