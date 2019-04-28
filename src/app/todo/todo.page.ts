@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StorageService } from '../storage.service'; //import data service
 import { Router, NavigationExtras } from '@angular/router';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 import { Task } from '../models/task.model';
 
 @Component({
@@ -15,7 +16,8 @@ export class TodoPage implements OnInit {
 
   constructor(
     private router: Router,
-    private storage: StorageService
+    private storage: StorageService,
+    private notification:LocalNotifications
   ) { console.log("Loading todo list page"); }
 
   ngOnInit() { }
@@ -69,6 +71,8 @@ export class TodoPage implements OnInit {
       //if id is found, set the object
       if (theTask.id == id) {
         this.deleteItem(index);
+        //cancel notification
+        this.notification.cancel(id);
       }
     });
     
@@ -100,17 +104,23 @@ export class TodoPage implements OnInit {
 
   //save data to localstorage on the done list
   changeStatus(task) {
-
+    //remove the task from todo list
+    this.deleteTask(task.id);
     //add task to the done array
     this.doneTasks.push(task);
     //save the data from our list to localstorage
     this.storage.saveData('done-list', this.doneTasks)
       .then((response) => {
-        //data written successfully
+        //data written successfully cancel notification 
+        //cancel notification
+        this.notification.cancel(task.id);
         console.log('Data saved successfully!');
       })
       .catch((error) => {
         console.log(error);
+      });
+      this.router.navigate(['/tabs/todo'], {
+        queryParams: {refresh: new Date().getTime()}
       });
   }
 

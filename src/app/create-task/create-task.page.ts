@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { StorageService}  from '../storage.service';
-import { Platform, AlertController } from '@ionic/angular';
-import { LocalNotifications, ELocalNotificationTriggerUnit } from '@ionic-native/local-notifications/ngx';
+import { AlertController } from '@ionic/angular';
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 //models
 import { Task } from '../models/task.model';
 
